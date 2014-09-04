@@ -30,6 +30,8 @@ class Number
     @number
   end
 
+  private
+
   def determine_type
     return "decimal" if @number.is_a? Numeric
     return "binary" if number_is_binary?
