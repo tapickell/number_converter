@@ -1,6 +1,8 @@
 class Number
+
   def initialize(number)
     @number = number
+    @numbers = {"10" => "A", "11" => "B", "12" => "C", "13" => "D", "14" => "E", "15" => "F"}
   end
 
   def type
@@ -9,33 +11,32 @@ class Number
 
   def to_decimal
     type = determine_type
-    return @number if type == "decimal"
-    return binary_to_decimal if type == "binary"
-    return hexadecimal_to_decimal
+    return @number.to_i(16) if type == "hexadecimal"
+    return @number.to_i(2) if type == "binary"
+    @number
   end
 
   def to_binary
     type = determine_type
-    return @number if type == "binary"
-    return decimal_to_binary if type == "decimal"
-    return hexadecimal_to_binary
+    return @number.to_i(16).to_s(2) if type == "hexadecimal"
+    return @number.to_s(2) if type == "decimal"
+    @number
   end
 
   def to_hexadecimal
     type = determine_type
-    return @number if type == "hexadecimal"
-    return decimal_to_hexadecimal if type == "decimal"
-    return binary_to_hexadecimal
+    return @number.to_i(2).to_s(16) if type == "binary"
+    return @number.to_s(16) if type == "decimal"
+    @number
   end
 
-  private
   def determine_type
     return "decimal" if @number.is_a? Numeric
-    return "binary" if number_is_binary
+    return "binary" if number_is_binary?
     return "hexadecimal"
   end
 
-  def number_is_binary
+  def number_is_binary?
     @number.each_char do |c|
       return false unless (c == '1' || c == '0')
     end
@@ -65,11 +66,26 @@ class Number
   def decimal_to_hexadecimal
     number = @number
     hexadecimal = ""
+    if number < 0
+      negative = true
+      number = number.abs
+    end
     while number > 0
       hexadecimal.prepend(number_to_letter(number % 16))
       number = number / 16
     end
+    hexadecimal = hex_twos_comp(hexadecimal) if negative
     hexadecimal
+  end
+
+  def hex_twos_comp(hexadecimal)
+    twos_hex = []
+    hexadecimal = [hexadecimal] unless hexadecimal.is_a? Array
+    hexadecimal.each do |digit|
+      number = @numbers.include? digit ? letter_to_number(digit) : digit.to_i
+      twos_hex << (15 - number) + 1
+    end
+    twos_hex.to_s
   end
 
   def decimal_to_binary
@@ -88,9 +104,8 @@ class Number
   end
 
   def number_to_letter(n)
-    numbers = {10 => "A", 11 => "B", 12 => "C", 13 => "D", 14 => "E", 15 => "F"}
     return n.to_s if n < 10
-    return numbers[n] if (10..15).include? n
+    return @numbers[n.to_s] if (10..15).include? n
     return "error"
   end
 end
