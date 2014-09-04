@@ -1,14 +1,87 @@
+# I just wanted to add some notes as I reflect on this code.
+# This was written a year ago as something to help me fully understand
+# converting numbers to different bases as I was working through
+# an assembly language course and it was something frequently done
+# in that class.
+# Today some of the things that I notice is that the class
+# converts numbers and has a sole purpose dedicated to converting them
+# but there is some ask don't tell going on and checking on type
+# which tells me that the types need to be there own classes.
+# The number class could be a factory creating the appropriate number class
+# for the number passed and returning that instance to the user. maybe.
+# I am thinking something in the initialize method that will return the
+# proper number class so that the public interface remains untouched
+# I would like to refactor this without changing a single test.
+
 class Number
+  def self.new number
+    return create_number number
+  end
 
-  def initialize(number)
+  private
+
+  def self.create_number number
+    return Binary.new number if number_is_binary? number
+    return Decimal.new number if number.is_a? Numeric
+    Hexadecimal.new number
+  end
+
+  def self.number_is_binary? number
+    return false if number.is_a? Numeric
+    number.chars.all? { |char| char == '1' || char == '0' }
+  end
+end
+
+class BaseNumber
+  def initialize number
     @number = number
-    @numbers = {"10" => "A", "11" => "B", "12" => "C", "13" => "D", "14" => "E", "15" => "F"}
+  end
+end
+
+class Binary < BaseNumber
+  def to_decimal
+    @number.to_i(2)
   end
 
-  def type
-    determine_type
+  def to_binary
+    @number
   end
 
+  def to_hexadecimal
+    @number.to_i(2).to_s(16)
+  end
+end
+
+class Decimal < BaseNumber
+  def to_decimal
+    @number
+  end
+
+  def to_binary
+    @number.to_s(2)
+  end
+
+  def to_hexadecimal
+    @number.to_s(16)
+  end
+end
+
+class Hexadecimal < BaseNumber
+  def to_decimal
+    @number.to_i(16)
+  end
+
+  def to_binary
+    @number.to_i(16).to_s(2)
+  end
+
+  def to_hexadecimal
+    @number
+  end
+end
+
+class Junk
+  @numbers = {"10" => "A", "11" => "B", "12" => "C", "13" => "D", "14" => "E", "15" => "F"}
   def to_decimal
     type = determine_type
     return @number.to_i(16) if type == "hexadecimal"
@@ -28,20 +101,6 @@ class Number
     return @number.to_i(2).to_s(16) if type == "binary"
     return @number.to_s(16) if type == "decimal"
     @number
-  end
-
-  private
-
-  def determine_type
-    return "decimal" if @number.is_a? Numeric
-    return "binary" if number_is_binary?
-    return "hexadecimal"
-  end
-
-  def number_is_binary?
-    @number.each_char do |c|
-      return false unless (c == '1' || c == '0')
-    end
   end
 
   def binary_to_decimal

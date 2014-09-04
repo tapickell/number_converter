@@ -11,45 +11,37 @@ TEST_NEGATIVE = -15
 describe Number do
   it "takes a binary number string then can return a decimal" do
     @number = Number.new(TEST_BINARY)
-    expect { @number.type == "binary" }
-    expect { @number.to_decimal == 61680 }
+    expect(@number.to_decimal).to eq(61680)
   end
 
   it "takes a hexadecimal number string then can return a decimal" do
     @number = Number.new(TEST_HEXADECIMAL)
-    expect { @number.type == "hexadecimal" }
-    expect { @number.to_decimal == 3853954775 }
+    expect(@number.to_decimal).to eq(3853954775)
   end
 
   it "takes an integer then can return a binary number string" do
     @number = Number.new(TEST_DECIMAL)
-    expect { @number.type == "decimal" }
-    expect { @number.to_binary == "101010" }
+    expect(@number.to_binary).to eq("101010")
   end
 
   it "takes an integer then can return a hexadecimal number string" do
     @number = Number.new(TEST_DECIMAL)
-    expect { @number.type == "decimal" }
-    expect { @number.to_hexadecimal == "2a" }
+    expect(@number.to_hexadecimal).to eq("2a")
   end
 
   it "takes an integer then can return a hexadecimal number string for other values" do
     @number1 = Number.new(TEST_FIFTEEN)
-    expect { @number1.type == "decimal" }
-    expect { @number1.to_hexadecimal == "f" }
+    expect(@number1.to_hexadecimal).to eq("f")
 
     @number2 = Number.new(TEST_TWENTY_TWO)
-    expect { @number2.type == "decimal" }
-    expect { @number2.to_hexadecimal == "16" }
+    expect(@number2.to_hexadecimal).to eq("16")
 
     @number3 = Number.new(TEST_TEN)
-    expect { @number3.type == "decimal" }
-    expect { @number3.to_hexadecimal == "a" }
+    expect(@number3.to_hexadecimal).to eq("a")
   end
 
   it "takes a negative integer then can return a hexadecimal number string" do
     @number = Number.new(TEST_NEGATIVE)
-    expect { @number.type == "decimal" }
-    expect { @number.to_hexadecimal == "-f" }
+    expect(@number.to_hexadecimal).to eq("-f")
   end
 end
