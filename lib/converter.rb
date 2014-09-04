@@ -80,43 +80,23 @@ class Hexadecimal < BaseNumber
   end
 end
 
-class Junk
-  @numbers = {"10" => "A", "11" => "B", "12" => "C", "13" => "D", "14" => "E", "15" => "F"}
-  def to_decimal
-    type = determine_type
-    return @number.to_i(16) if type == "hexadecimal"
-    return @number.to_i(2) if type == "binary"
-    @number
-  end
+class NumberHelper
+  @@numbers = {"10" => "A", "11" => "B", "12" => "C", "13" => "D", "14" => "E", "15" => "F"}
 
-  def to_binary
-    type = determine_type
-    return @number.to_i(16).to_s(2) if type == "hexadecimal"
-    return @number.to_s(2) if type == "decimal"
-    @number
-  end
-
-  def to_hexadecimal
-    type = determine_type
-    return @number.to_i(2).to_s(16) if type == "binary"
-    return @number.to_s(16) if type == "decimal"
-    @number
-  end
-
-  def binary_to_decimal
+  def self.binary_to_decimal number
     count = 0
-    bit = @number.length
-    @number.each_char do |c|
+    bit = number.length
+    number.each_char do |c|
       bit -= 1
       count += (1*2**bit) if c == "1"
     end
     count
   end
 
-  def hexadecimal_to_decimal
+  def self.hexadecimal_to_decimal number
     count = 0
-    bit = @number.length
-    @number.each_char do |c|
+    bit = number.length
+    number.each_char do |c|
       bit -= 1
       number = (c.to_i == 0) ? letter_to_number(c) : c.to_i
       count += (number*16**bit)
@@ -124,8 +104,7 @@ class Junk
     count
   end
 
-  def decimal_to_hexadecimal
-    number = @number
+  def self.decimal_to_hexadecimal number
     hexadecimal = ""
     if number < 0
       negative = true
@@ -139,18 +118,7 @@ class Junk
     hexadecimal
   end
 
-  def hex_twos_comp(hexadecimal)
-    twos_hex = []
-    hexadecimal = [hexadecimal] unless hexadecimal.is_a? Array
-    hexadecimal.each do |digit|
-      number = @numbers.include? digit ? letter_to_number(digit) : digit.to_i
-      twos_hex << (15 - number) + 1
-    end
-    twos_hex.to_s
-  end
-
-  def decimal_to_binary
-    number = @number
+  def self.decimal_to_binary number
     binary = ""
     while number > 0
       binary.prepend(number % 2 == 1 ? "1" : "0")
@@ -159,14 +127,25 @@ class Junk
     binary
   end
 
-  def letter_to_number(c)
+  private
+
+  def self.hex_twos_comp hexadecimal
+    twos_hex = []
+    hexadecimal = [hexadecimal] unless hexadecimal.is_a? Array
+    hexadecimal.each do |digit|
+      number = @@numbers.include? digit ? letter_to_number(digit) : digit.to_i
+      twos_hex << (15 - number) + 1
+    end
+    twos_hex.to_s
+  end
+
+  def self.letter_to_number(c)
     number = c.ord
     number - 55
   end
 
-  def number_to_letter(n)
+  def self.number_to_letter(n)
     return n.to_s if n < 10
-    return @numbers[n.to_s] if (10..15).include? n
-    return "error"
+    @@numbers[n.to_s] if (10..15).include? n
   end
 end
